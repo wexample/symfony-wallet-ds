@@ -1,11 +1,36 @@
 {
   "name": "wexample/symfony-wallet-ds",
+  "description": "Design-system screens for symfony-wallet: the credentials listed with their last test, added by type, edited without showing a secret again, tested, removed when unused",
   "version": "1.0.1",
   "type": "library",
   "license": "MIT",
   "autoload": {
     "psr-4": {
       "Wexample\\SymfonyWalletDs\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=8.5",
+    "wexample/symfony-wallet": ">=1.0.1",
+    "wexample/symfony-api": ">=17.0.0",
+    "wexample/symfony-design-system": ">=43.0.0",
+    "wexample/symfony-platform-ds": ">=1.0.0",
+    "wexample/symfony-helpers": ">=19.1.0",
+    "wexample/symfony-loader": ">=27.0.0",
+    "wexample/symfony-forms": ">=16.0.0"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../*",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
+  "extra": {
+    "install": {
+      "bundle_env": "all"
     }
   }
 }
