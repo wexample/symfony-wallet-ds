@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $credentialClass: '%wexample_symfony_wallet.credential_class%'
+
+    Wexample\SymfonyWalletDs\:
+        resource: '../../{Form,Service}'
+
+    Wexample\SymfonyWalletDs\Controller\:
+        resource: '../../Controller/'
+        tags: ['controller.service_arguments']
