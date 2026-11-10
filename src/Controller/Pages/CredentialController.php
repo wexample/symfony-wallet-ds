@@ -50,15 +50,6 @@ final class CredentialController extends AbstractPagesController
 
     private const string TRANSLATION_DOMAIN = 'WexampleSymfonyWalletDsBundle.pages.credential.index::';
 
-    /**
-     * @param class-string<AbstractCredential> $credentialClass
-     */
-    public function __construct(
-        private readonly string $credentialClass,
-        private readonly TranslatorInterface $translator,
-    ) {
-    }
-
     #[RouteDescription('The credentials, with their last test, to search, sort and act on.')]
     #[Route(path: '', name: self::ROUTE_INDEX)]
     public function index(CredentialTypeRegistry $typeRegistry): Response
@@ -105,14 +96,16 @@ final class CredentialController extends AbstractPagesController
         Request $request,
         EntityManagerInterface $entityManager,
         CredentialCheckService $checkService,
+        TranslatorInterface $translator,
+        string $credentialClass,
     ): RedirectResponse {
         if (! $this->isCsrfTokenValid(self::CSRF_CHECK, (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
-        $credential = $this->findCredential($id, $entityManager);
+        $credential = $this->findCredential($id, $entityManager, $credentialClass);
         $checkService->ask($credential);
-        $this->notify(Notification::TYPE_SUCCESS, 'check.asked', ['%title%' => $credential->getTitle()]);
+        $this->notify($translator, Notification::TYPE_SUCCESS, 'check.asked', ['%title%' => $credential->getTitle()]);
 
         return $this->redirectToRoute(self::ROUTE_INDEX);
     }
@@ -124,27 +117,32 @@ final class CredentialController extends AbstractPagesController
         Request $request,
         EntityManagerInterface $entityManager,
         CredentialUsageService $usageService,
+        TranslatorInterface $translator,
+        string $credentialClass,
     ): RedirectResponse {
         if (! $this->isCsrfTokenValid(self::CSRF_DELETE, (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
-        $credential = $this->findCredential($id, $entityManager);
+        $credential = $this->findCredential($id, $entityManager, $credentialClass);
 
         if ($usageService->isUsed($credential)) {
-            $this->notify(Notification::TYPE_WARNING, 'delete.kept', ['%title%' => $credential->getTitle()]);
+            $this->notify($translator, Notification::TYPE_WARNING, 'delete.kept', ['%title%' => $credential->getTitle()]);
         } else {
             $entityManager->remove($credential);
             $entityManager->flush();
-            $this->notify(Notification::TYPE_SUCCESS, 'delete.done', ['%title%' => $credential->getTitle()]);
+            $this->notify($translator, Notification::TYPE_SUCCESS, 'delete.done', ['%title%' => $credential->getTitle()]);
         }
 
         return $this->redirectToRoute(self::ROUTE_INDEX);
     }
 
-    private function findCredential(string $id, EntityManagerInterface $entityManager): AbstractCredential
+    /**
+     * @param class-string<AbstractCredential> $credentialClass
+     */
+    private function findCredential(string $id, EntityManagerInterface $entityManager, string $credentialClass): AbstractCredential
     {
-        return $entityManager->getRepository($this->credentialClass)->find($id) ?? throw $this->createNotFoundException();
+        return $entityManager->getRepository($credentialClass)->find($id) ?? throw $this->createNotFoundException();
     }
 
     /** @return list<array{value: string, label: string, icon: string}> The types, for the list's menu and its filter. */
@@ -161,8 +159,8 @@ final class CredentialController extends AbstractPagesController
     }
 
     /** Said in a toast on the page the redirect reaches, once. */
-    private function notify(string $type, string $key, array $parameters): void
+    private function notify(TranslatorInterface $translator, string $type, string $key, array $parameters): void
     {
-        $this->addFlash($type, (new Notification($this->translator->trans(self::TRANSLATION_DOMAIN.$key, $parameters), $type))->toArray());
+        $this->addFlash($type, (new Notification($translator->trans(self::TRANSLATION_DOMAIN.$key, $parameters), $type))->toArray());
     }
 }
