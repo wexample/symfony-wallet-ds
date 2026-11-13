@@ -1,7 +1,7 @@
 {
   "name": "wexample/symfony-wallet-ds",
   "description": "Design-system screens for symfony-wallet: the credentials listed with their last test, added by type, edited without showing a secret again, tested, removed when unused",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "type": "library",
   "license": "MIT",
   "autoload": {
@@ -13,7 +13,7 @@
     "php": ">=8.5",
     "wexample/symfony-wallet": ">=2.0.0",
     "wexample/symfony-api": ">=17.0.0",
-    "wexample/symfony-design-system": ">=43.0.0",
+    "wexample/symfony-design-system": ">=44.0.0",
     "wexample/symfony-platform-ds": ">=1.0.0",
     "wexample/symfony-helpers": ">=19.1.0",
     "wexample/symfony-loader": ">=27.2.0",
