@@ -74,9 +74,11 @@ export default {
           label: t('column.check'),
           align: 'center',
           cell: 'status',
+          // Never tested: no status — handed over empty by the table, not
+          // null —, said as such rather than as a key with nothing after it.
           format: (value, row) => ({
             type: CHECK_TONES[value] ?? 'neutral',
-            label: t(`check.${value ?? 'never'}`),
+            label: t(`check.${value || 'never'}`),
             title: row?.checkMessage ?? undefined
           })
         },
