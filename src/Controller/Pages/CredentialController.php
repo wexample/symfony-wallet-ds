@@ -142,7 +142,10 @@ final class CredentialController extends AbstractPagesController
      */
     private function findCredential(string $id, EntityManagerInterface $entityManager, string $credentialClass): AbstractCredential
     {
-        return $entityManager->getRepository($credentialClass)->find($id) ?? throw $this->createNotFoundException();
+        $credential = $entityManager->getRepository($credentialClass)->find($id);
+
+        // An internal one alone (AbstractCredential::isInternal).
+        return $credential?->isInternal() ? $credential : throw $this->createNotFoundException();
     }
 
     /** @return list<array{value: string, label: string, icon: string}> The types, for the list's menu and its filter. */

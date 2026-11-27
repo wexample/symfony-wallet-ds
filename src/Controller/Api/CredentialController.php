@@ -64,6 +64,11 @@ class CredentialController extends AbstractApiController
     ): ApiResponse {
         $builder = $entityManager->getRepository($this->credentialClass)->createQueryBuilder('credential');
 
+        // The internal ones alone (AbstractCredential::isInternal).
+        if ($internal = $this->credentialClass::internalCondition('credential')) {
+            $builder->andWhere($internal);
+        }
+
         if ($search = trim((string) self::getQueryOptionValue($request, VariableHelper::SEARCH, ''))) {
             $builder
                 ->andWhere('LOWER(credential.title) LIKE :search OR LOWER(credential.type) LIKE :search')

@@ -30,8 +30,10 @@ final readonly class CredentialFormDataResolver implements FormProcessorDataReso
     public function resolve(Request $request, array $options = []): AbstractCredential
     {
         if ($id = $request->attributes->get('id')) {
-            return $this->entityManager->getRepository($this->credentialClass)->find($id)
-                ?? throw new NotFoundHttpException('No credential '.$id);
+            $credential = $this->entityManager->getRepository($this->credentialClass)->find($id);
+
+            // An internal one alone (AbstractCredential::isInternal).
+            return $credential?->isInternal() ? $credential : throw new NotFoundHttpException('No credential '.$id);
         }
 
         $type = (string) $request->attributes->get('type');
